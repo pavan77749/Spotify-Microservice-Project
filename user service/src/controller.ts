@@ -8,7 +8,7 @@ export const registerUser = TryCatch(async (req, res) => {
     const { name, email, password } = req.body;
     let user = await User.findOne({ email});
     if (user) {
-        return res.status(400).json({
+         res.status(400).json({
             message: "User already exists",
         });
        
@@ -36,13 +36,13 @@ export const loginUser = TryCatch(async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
     if (!user) {
-        return res.status(400).json({
+         res.status(400).json({
             message: "User not found",
         });
     }
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-        return res.status(400).json({
+         res.status(400).json({
             message: "Invalid credentials",
         });
     }
@@ -61,7 +61,7 @@ export const loginUser = TryCatch(async (req, res) => {
 export const myProfile = TryCatch(async (req:AuthRequest, res) => {
     const user = req.user;
     if (!user) {
-        return res.status(400).json({
+         res.status(400).json({
             message: "Please login",
         });
     }
