@@ -159,3 +159,70 @@ export const addThumbnail = TryCatch(async (req: AuthenticatedRequest, res) => {
 
   }
 });
+
+export const deleteAlbum = TryCatch(async (req: AuthenticatedRequest, res) => {
+  try {
+    if (req.user?.role !== "admin") {
+      res.status(401).json({
+        message: "You are not admin",
+      });
+      return;
+    }
+    const albumId = req.params.id;
+    const album = await sql`
+      SELECT * FROM albums WHERE id = ${albumId};
+    `;
+    if (album.length === 0) {
+      res.status(404).json({
+        message: "No album with this id",
+      });
+      return;
+    }
+    // Delete the album from the database
+    await sql`
+      DELETE FROM albums WHERE id = ${albumId};
+    `;
+    // Optionally, you can also delete the associated songs if needed
+    await sql`
+      DELETE FROM songs WHERE album_id = ${albumId};
+    `;
+    res.status(200).json({
+      message: "Album deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error in deleteAlbum:", error);
+    res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+});
+
+export const deleteSong = TryCatch(async (req: AuthenticatedRequest, res) => {
+  try {
+    if (req.user?.role !== "admin") {
+      res.status(401).json({
+        message: "You are not admin",
+      });
+      return;
+    }
+    const songId = req.params.id;
+    const song = await sql`
+      SELECT * FROM songs WHERE id = ${songId};
+    `;
+    if (song.length === 0) {
+      res.status(404).json({
+        message: "No song with this id",
+      });
+      return;
+    }
+    // Delete the song from the database
+    await sql`
+      DELETE FROM songs WHERE id = ${songId};
+    `;
+    res.status(200).json({
+      message: "Song deleted successfully",
+    });
+  } catch (error) {
+    
+  }
+});
