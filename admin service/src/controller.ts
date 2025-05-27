@@ -51,3 +51,58 @@ export const addAlbum = TryCatch(async (req: AuthenticatedRequest, res) => {
     album: result[0],
   });
 });
+
+export const addSong = TryCatch(async (req: AuthenticatedRequest, res) => {
+  if (req.user?.role !== "admin") {
+    res.status(401).json({
+      message: "You are not admin",
+    });
+    return;
+  }
+
+  const { title, description, album } = req.body;
+
+  const isAlbum = await sql`SELECT * FROM albums WHERE id = ${album}`;
+
+  if (isAlbum.length === 0) {
+    res.status(404).json({
+      message: "No album with this id",
+    });
+    return;
+  }
+
+  const file = req.file;
+
+  if (!file) {
+    res.status(400).json({
+      message: "No file to upload",
+    });
+    return;
+  }
+
+  
+
+  const fileBuffer = getBuffer(file);
+
+  if (!fileBuffer || !fileBuffer.content) {
+    res.status(500).json({
+      message: "Failed to generate file buffer",
+    });
+    return;
+  }
+
+  const cloud = await cloudinary.v2.uploader.upload(fileBuffer.content, {
+    folder: "songs",
+    resource_type: "video",
+  });
+
+  const result = await sql`
+    INSERT INTO songs (title, description, audio, album_id) VALUES
+    (${title}, ${description}, ${cloud.secure_url}, ${album})
+  `;
+
+
+  res.json({
+    message: "Song Added",
+  });
+});
