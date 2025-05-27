@@ -106,3 +106,56 @@ export const addSong = TryCatch(async (req: AuthenticatedRequest, res) => {
     message: "Song Added",
   });
 });
+
+export const addThumbnail = TryCatch(async (req: AuthenticatedRequest, res) => {
+  try {
+    if (req.user?.role !== "admin") {
+      res.status(401).json({
+        message: "You are not admin",
+      });
+      return;
+    }
+    const song = await sql`
+      SELECT * FROM songs WHERE id = ${req.params.id};
+    `;
+    if (song.length === 0) {
+      res.status(404).json({
+        message: "No song with this id",
+      });
+      return;
+    }
+    const file = req.file;
+    if (!file) {
+      res.status(400).json({
+        message: "No file to upload",
+      });
+      return;
+    }
+    const fileBuffer = getBuffer(file);
+    if (!fileBuffer || !fileBuffer.content) {
+      res.status(500).json({
+        message: "Failed to generate file buffer",
+      });
+      return;
+    }
+    const cloud = await cloudinary.v2.uploader.upload(fileBuffer.content);
+
+    const result = await sql`
+      UPDATE songs
+      SET thumbnail = ${cloud.secure_url}
+      WHERE id = ${req.params.id}
+      RETURNING *;
+    `;
+    res.status(200).json({
+      message: "Thumbnail added successfully",
+      song: result[0],
+    });
+
+  } catch (error) {
+    console.error("Error in addThumbnail:", error);
+    res.status(500).json({
+      message: "Internal server error",
+    }); 
+
+  }
+});
