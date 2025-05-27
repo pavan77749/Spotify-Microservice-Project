@@ -15,6 +15,8 @@ cloudinary.v2.config({
 
 const app = express();
 
+app.use(express.json());
+
 async function initDB() {
     try {
         await sql`CREATE TABLE IF NOT EXISTS albums (

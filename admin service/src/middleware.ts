@@ -33,7 +33,7 @@ export const isAuth = async (req: AuthenticatedRequest, res: Response, next: Nex
         },
     });
    
-    req.user = data;
+    req.user = data.user as IUser;
     next();
 
     } catch (error) {
