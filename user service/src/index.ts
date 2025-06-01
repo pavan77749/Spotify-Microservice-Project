@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import userRoutes from './route.js'
+import cors from 'cors';
 
 dotenv.config();
 
@@ -19,6 +20,9 @@ const connectDB = async () => {
 
 const app = express();
 app.use(express.json());
+app.use(cors({
+    origin: process.env.CORS_ORIGIN || '*', // Allow all origins or specify your frontend URL
+}));
 
 app.use("/api/v1", userRoutes);
 
