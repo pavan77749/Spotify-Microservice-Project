@@ -3,6 +3,7 @@ import TryCatch from "./TryCatch.js";
 import cloudinary from "cloudinary";
 import { sql } from "./config/db.js";
 import { Request, Response } from "express";
+import { redisClient } from "./index.js";
 
 interface AuthenticatedRequest extends Request {
   user?: {
@@ -45,6 +46,12 @@ export const addAlbum = TryCatch(async (req: AuthenticatedRequest, res) => {
     VALUES (${title}, ${description}, ${cloud.secure_url})
     RETURNING *;
   `;
+
+  if(redisClient.isReady) {
+    await redisClient.del("albums"); // Invalidate the cache for albums
+    console.log("Cache for albums invalidated");
+  }   
+  
 
   res.status(201).json({
     message: "Album added successfully",
@@ -101,6 +108,11 @@ export const addSong = TryCatch(async (req: AuthenticatedRequest, res) => {
     (${title}, ${description}, ${cloud.secure_url}, ${album})
   `;
 
+  if(redisClient.isReady) {
+    await redisClient.del("songs"); // Invalidate the cache for songs
+    console.log("Cache for songs invalidated");
+  }
+
 
   res.json({
     message: "Song Added",
@@ -146,6 +158,12 @@ export const addThumbnail = TryCatch(async (req: AuthenticatedRequest, res) => {
       WHERE id = ${req.params.id}
       RETURNING *;
     `;
+
+    if(redisClient.isReady) {
+      await redisClient.del("songs"); // Invalidate the cache for songs
+      console.log("Cache for songs invalidated");
+    }
+
     res.status(200).json({
       message: "Thumbnail added successfully",
       song: result[0],
@@ -186,6 +204,17 @@ export const deleteAlbum = TryCatch(async (req: AuthenticatedRequest, res) => {
     await sql`
       DELETE FROM songs WHERE album_id = ${albumId};
     `;
+
+       if(redisClient.isReady) {
+      await redisClient.del("albums"); 
+      console.log("Cache for songs invalidated");
+    }
+
+    if(redisClient.isReady) {
+      await redisClient.del("songs"); // Invalidate the cache for songs
+      console.log("Cache for albums invalidated");
+    }
+
     res.status(200).json({
       message: "Album deleted successfully",
     });
@@ -219,10 +248,20 @@ export const deleteSong = TryCatch(async (req: AuthenticatedRequest, res) => {
     await sql`
       DELETE FROM songs WHERE id = ${songId};
     `;
+
+ 
+
+    if(redisClient.isReady) {
+      await redisClient.del("songs"); // Invalidate the cache for songs
+      console.log("Cache for songs invalidated");
+    }
+
+
+    
     res.status(200).json({
       message: "Song deleted successfully",
     });
   } catch (error) {
-    
+    console.error("Error in deleteSong:", error);
   }
 });
