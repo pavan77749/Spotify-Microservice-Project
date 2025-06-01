@@ -18,8 +18,10 @@
     "@neondatabase/serverless": "^1.0.0",
     "@types/dotenv": "^6.1.1",
     "@types/express": "^5.0.2",
+    "@types/redis": "^4.0.10",
     "dotenv": "^16.5.0",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "redis": "^5.1.1"
   },
   "devDependencies": {
     "concurrently": "^9.1.2",
