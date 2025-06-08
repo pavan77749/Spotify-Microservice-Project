@@ -4,9 +4,11 @@ import { useUserData } from "../context/UserContext";
 const Navbar = () => {
     const navigate = useNavigate();
 
-    const {isAuth} = useUserData();
+    const {isAuth,logoutUser} = useUserData();
 
-    
+    const logoutUserHandler = () => {
+      logoutUser()
+    }
 
   return (
 <>
@@ -19,7 +21,7 @@ const Navbar = () => {
         <p className="px-4 py-1 cursor-pointer bg-white text-black text-[15px] rounded-full md:block hidden">Expore Premium</p>
         <p className="px-4 py-1 cursor-pointer bg-white text-black text-[15px] rounded-full md:block hidden">Install App</p>
                {
-                isAuth ?  <p className="px-4 py-1 cursor-pointer bg-white text-black text-[15px] rounded-full">Logout</p> 
+                isAuth ?  <p className="px-4 py-1 cursor-pointer bg-white text-black text-[15px] rounded-full" onClick={()=> logoutUserHandler()}>Logout</p> 
                 :  <p className="px-4 py-1 cursor-pointer bg-white text-black text-[15px] rounded-full" onClick={()=> navigate("/login")}>Login</p>
                }
 

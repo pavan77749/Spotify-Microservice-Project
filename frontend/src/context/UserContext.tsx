@@ -27,7 +27,8 @@ interface UserContextType {
         email:string,
         password:string,
         navigate:(path: string) => void
-     ) => Promise<void>
+     ) => Promise<void>,
+     logoutUser: () => Promise<void>
     }
      
 
@@ -115,13 +116,23 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         }
     }
 
+    async function logoutUser(){
+        localStorage.clear()
+        setUser(null)
+        setIsAuth(false)
+
+        toast.success("User Logout Successfully")
+
+
+    }
+
        useEffect(()=>{
         fetchUser();
        },[])
     
 
     return (
-        <UserContext.Provider value={{user,loading,isAuth,btnloading,loginUser,registerUser}}>
+        <UserContext.Provider value={{user,loading,isAuth,btnloading,loginUser,registerUser,logoutUser}}>
             {children}
             <Toaster/>
         </UserContext.Provider>
