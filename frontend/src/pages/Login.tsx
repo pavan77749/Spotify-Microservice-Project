@@ -31,7 +31,7 @@ const Login = () => {
                 <div className="flex items-center justify-center mb-4">
                     <FaSpotify className="text-green-500 text-4xl mr-3" />
                     <h1 className="text-2xl font-bold bg-gradient-to-r from-green-400 to-green-600 bg-clip-text text-transparent">
-                        MusicStream
+                        Spotify Clone
                     </h1>
                 </div>
 
