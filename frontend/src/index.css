@@ -5,3 +5,11 @@ body{
   @apply bg-black;
   font-family: 'Poppins', sans-serif;
 }
+
+.auth-input{
+  @apply w-full bg-gray-800 text-white border border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-gray-500;
+}
+
+.auth-btn {
+  @apply w-full bg-green-500 hover:bg-green-400 text-black rounded-full p-3 cursor-pointer;
+}
