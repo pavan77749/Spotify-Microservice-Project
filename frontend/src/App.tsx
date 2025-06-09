@@ -4,6 +4,7 @@ import Login from './pages/Login'
 import { useUserData } from './context/UserContext'
 import Loading from './components/Loading';
 import Register from './pages/Register';
+import Alumb from './pages/Alumb';
 
 
 
@@ -18,6 +19,7 @@ function App() {
         <Route path="/" element={<Home/> } />
         <Route path="/login" element={isAuth ? <Home/> : <Login/>} />
         <Route path='/register' element={isAuth? <Home/> : <Register/>} />
+        <Route path="/album/:id" element={<Alumb/> } />
       </Routes>
     </BrowserRouter>}
    </>

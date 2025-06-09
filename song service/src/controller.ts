@@ -83,61 +83,42 @@ export const getAllSongs = TryCatch(async (req, res) => {
 });
 
 export const getAllSongsofAlbum = TryCatch(async (req, res) => {
-    const { id } = req.params;
-    let songs , album;
-    const CACHE_EXPIRE_TIME = 1800;
+  const { id } = req.params;
+  const CACHE_EXPIRY = 1800;
 
-    if(redisClient.isReady) {
-        const cachedSongs = await redisClient.get(`album:${id}`);
-        if (cachedSongs) {
-            return res.status(200).json({
-                message: "Songs fetched from cache",
-                songs: JSON.parse(cachedSongs),
-            });
-        }
-        else {
-            console.log("Cache miss for album songs");
-            try {
-                album = await sql`SELECT * FROM albums WHERE id = ${id}`;
-                if (album.length === 0) {
-                    return res.status(404).json({ message: "No album found with this id" });
-                }
-                songs = await sql`SELECT * FROM songs WHERE album_id = ${id}`;
-                
-                if(redisClient.isReady) {
-                    await redisClient.set(`album:${id}`, JSON.stringify(songs), {
-                        EX: CACHE_EXPIRE_TIME,  
-                    });
-                    console.log("Album songs cached successfully");
-                }
-            } catch (error) {
-                return res.status(500).json({ message: "Error fetching album or songs" });
-            }
-        }
-    }
+  let album, songs;
 
+  if (redisClient.isReady) {
+    const cacheData = await redisClient.get(`album_songs_${id}`);
+    if (cacheData) {
+      console.log("cache hit");
+      res.json(JSON.parse(cacheData));
+      return;
+    }
+  }
 
-    try {
-        album = await sql`SELECT * FROM albums WHERE id = ${id}`;
-    } catch (error) {
-        return res.status(500).json({ message: "Error fetching album" });
-    }
-    if (album.length === 0) {
-        return res.status(404).json({ message: "No album found with this id" });
-    }
-    try {
-        songs = await sql`SELECT * FROM songs WHERE album_id = ${id}`;
-    } catch (error) {
-        return res.status(500).json({ message: "Error fetching songs" });
-    }
-    if (songs.length === 0) {
-        return res.status(404).json({ message: "No songs found for this album" });
-    }
-    res.status(200).json({
-        message: "Songs fetched successfully",
-        songs,
-        album: album[0],
+  album = await sql`SELECT * FROM albums WHERE id = ${id}`;
+
+  if (album.length === 0) {
+    res.status(404).json({
+      message: "No album with this id",
     });
+    return;
+  }
+
+  songs = await sql` SELECT * FROM songs WHERE album_id = ${id}`;
+
+  const response = { songs, album: album[0] };
+
+  if (redisClient.isReady) {
+    await redisClient.set(`album_songs_${id}`, JSON.stringify(response), {
+      EX: CACHE_EXPIRY,
+    });
+  }
+
+  console.log("chche miss");
+
+  res.json(response);
 });
 
 export const getSingleSong = TryCatch(async (req, res) => {

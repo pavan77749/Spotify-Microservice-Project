@@ -26,6 +26,9 @@ interface SongContextType {
     fetchSingleSong: () => Promise<void>,
      nextSong: () => void;
   prevSong: () => void;
+  albumSong: Song[],
+  albumData: Album | null,
+  fetchAlbumSongs: (id: string) => Promise<void>,
 }
 
 export interface Album {
@@ -126,6 +129,26 @@ export const SongProvider : React.FC<SongProviderProps> = ({children}) => {
       console.log("Auto-selected Random Song:", randomSong.title);
     }
   }, [songs]);
+
+  const [albumSong, setAlbumSong] = useState<Song[]>([]);
+  const [albumData, setAlbumData] = useState<Album | null>(null);
+  const fetchAlbumSongs = useCallback(async (id: string) => {
+    setLoading(true);
+    try {
+      const { data } = await axios.get<{songs: Song[]; album:Album }>(`${server}/api/v1/album/${id}`);
+      console.log("Full API response:", data);
+      setAlbumData(data.album);
+      setAlbumSong(data.songs);
+      console.log("Fetched album songs:", data.songs);
+      console.log("Fetched album data:", data.album);
+    } catch (error) {
+      console.error("Error fetching album songs:", error);
+    }
+    finally {
+      setLoading(false);
+    }
+
+  }, []);
   
     useEffect(() => {
         fetchSongs();
@@ -135,7 +158,7 @@ export const SongProvider : React.FC<SongProviderProps> = ({children}) => {
 
     return (
         <SongContext.Provider value={{songs ,selectedSong,setIsPlaying,setSelectedSong,IsPlaying,loading,albums,song, fetchSingleSong, nextSong,
-        prevSong,}}>
+        prevSong, albumSong, albumData, fetchAlbumSongs}}>
             {children}
         </SongContext.Provider>
     )

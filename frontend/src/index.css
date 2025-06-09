@@ -13,3 +13,16 @@ body{
 .auth-btn {
   @apply w-full bg-green-500 hover:bg-green-400 text-black rounded-full p-3 cursor-pointer;
 }
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 4s linear infinite;
+}
