@@ -1,6 +1,7 @@
 import React from 'react'
 import { FaBookmark, FaPlay } from 'react-icons/fa';
 import { useSongData } from '../context/SongContext';
+import { useUserData } from '../context/UserContext';
 
 interface SongCardProps {
     image: string;
@@ -13,6 +14,24 @@ interface SongCardProps {
     const SongCard : React.FC<SongCardProps> = ({name,image,desc,id}) => {
 
      const {setSelectedSong, setIsPlaying} = useSongData()
+     const {addToPlaylist,user}  = useUserData()
+
+    
+
+    const handleAddToPlaylist = async () => {
+        if (!user) {
+            console.error("User is not authenticated");
+            return;
+        }
+        try {
+            await addToPlaylist(id);
+            console.log("Song added to playlist successfully");
+        } catch (error) {
+            console.error("Error adding song to playlist:", error);
+        }
+
+      }
+
       return (
     <div className="min-w-[180px] p-2 px-3 rounded cursor-pointer hover:bg-[#ffffff26]">
         <div className="relative group">
@@ -23,7 +42,7 @@ interface SongCardProps {
   setSelectedSong(id);
   setIsPlaying(true);
 }} className='absolute bottom-2 right-14 bg-green-500 text-black p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer' ><FaPlay/></button>
-                  <button className='absolute bottom-2 right-2 bg-green-500 text-black p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer'><FaBookmark/></button>
+                  <button className='absolute bottom-2 right-2 bg-green-500 text-black p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer' onClick={handleAddToPlaylist}><FaBookmark/></button>
             </div>
         </div>
       <p className='font-bold mt-2 mb-1'>{name}</p>

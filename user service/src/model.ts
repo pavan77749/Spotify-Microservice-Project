@@ -28,8 +28,7 @@ const schema = new Schema<IUser>({
         default: 'user',
     },
     playlist: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Playlist',
+        type: String,
     }],
 }, { timestamps: true }); 
 

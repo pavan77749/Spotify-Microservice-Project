@@ -71,3 +71,37 @@ export const myProfile = TryCatch(async (req:AuthRequest, res) => {
     });
 }
 );
+
+export const addPlaylist = TryCatch(async (req:AuthRequest, res) => {
+  const userId = req.user?._id;
+
+  const user = await User.findById(userId);
+  if(!user){
+    res.status(404).json({
+      message: "User not found",
+    });
+    return
+  }
+
+  if (user?.playlist.includes(req.params.id)) {
+      const index = user.playlist.indexOf(req.params.id);
+
+      user.playlist.splice(index, 1);
+
+      await user.save();
+
+      res.json({
+        message: " Removed from playlist",
+      });
+      return;
+    }
+
+    user.playlist.push(req.params.id);
+
+    await user.save();
+
+    res.json({
+      message: "Added to PlayList",
+    });
+  }
+);
