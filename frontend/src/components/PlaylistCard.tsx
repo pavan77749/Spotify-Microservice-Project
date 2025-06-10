@@ -6,6 +6,7 @@ import { use } from "react";
 const PlayListCard = () => {
 
   const {user, isAuth} = useUserData();
+  
 
   return (
     <div className="flex items-center p-4 rounded-lg shadow-md cursor-pointer hover:bg-[#ffffff26]">
@@ -16,7 +17,7 @@ const PlayListCard = () => {
         <h2>My PlayList</h2>
         <p className="text-gray-400 text-sm">
           PlayList •{" "}
-          {isAuth ? <span>{user?.name}</span> : <span>User</span>}
+          {isAuth ? <span>{user?.user?.name}</span> : <span>User</span>}
         </p>
       </div>
     </div>
