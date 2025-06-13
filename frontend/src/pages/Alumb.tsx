@@ -106,7 +106,7 @@ const Alumb = () => {
                                                     </div>
                                                     <div className="relative">
                                                         <img
-                                                            src={song.thumbnail ? song.thumbnail : "/download.jpeg"}
+                                                            src={song.thumbnail ? song.thumbnail : "/download.png"}
                                                             className="inline w-10 h-10 rounded mr-4 object-cover transition-all duration-300"
                                                             style={{
                                                                 animation: isCurrentSong && IsPlaying ? 'spin 3s linear infinite' : 'none',

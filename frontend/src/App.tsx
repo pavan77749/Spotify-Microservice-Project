@@ -6,6 +6,7 @@ import Loading from './components/Loading';
 import Register from './pages/Register';
 import Alumb from './pages/Alumb';
 import PlayList from './pages/PlayList';
+import Admin from './pages/Admin';
 
 
 
@@ -22,7 +23,7 @@ function App() {
         <Route path='/register' element={isAuth? <Home/> : <Register/>} />
         <Route path="/album/:id" element={<Alumb/> } />
         <Route path="/playlist" element={isAuth ? <PlayList/> : <Login/>}/>
-
+         <Route path="/admin/dashboard" element={isAuth ? <Admin/> : <Login/>}/>
       </Routes>
     </BrowserRouter>}
    </>
